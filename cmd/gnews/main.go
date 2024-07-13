@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/leberjs/gnews/internal/cmd"
 	"github.com/leberjs/gnews/internal/config"
@@ -30,8 +31,8 @@ func main() {
     cfg = config.InitConfig()
   }
 
-  dbName := cfg.Database.Name + ".db"
-  db, err := bolt.Open(dbName, 0600, nil)
+  dbPath := filepath.Join(config.ConfigDir(), cfg.Database.Name + ".db")
+  db, err := bolt.Open(dbPath, 0600, nil)
   if err != nil {
     log.Fatal(err)
   }

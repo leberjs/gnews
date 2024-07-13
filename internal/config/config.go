@@ -76,3 +76,14 @@ func InitConfig() Config {
 
   return config
 }
+
+func ConfigDir() string {
+  dir, err := os.UserConfigDir()
+  if err != nil {
+    log.Fatal(err)
+  }
+  
+  configDirPath := filepath.Join(dir, configDir)
+
+  return configDirPath
+}
