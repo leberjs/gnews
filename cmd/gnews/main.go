@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "fmt"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -81,14 +81,10 @@ func main() {
         Name: "ls",
         Usage: "List all entries in databse",
         Action: func(ctx *cli.Context) error {
-          db.View( func(tx *bolt.Tx) error{
-            b := tx.Bucket([]byte("apps"))
-            v := b.Get([]byte("421"))
-            fmt.Printf("App: %s\n", v)
+          apps := cmd.List(db)
+          res, _ := json.MarshalIndent(apps, "", "    ")
 
-            return nil
-          })
-
+          fmt.Println(string(res))
           return nil
         },
       },
@@ -107,7 +103,19 @@ func main() {
       },
       {
         Name: "rm",
+        Flags: []cli.Flag{
+          &cli.StringFlag{
+            Name: "app-id",
+            Usage: "Steam game App Id",
+            Destination: &appId,
+            Required: true,
+          },
+        },
         Usage: "Remove entry from database",
+        Action: func(ctx *cli.Context) error {
+          cmd.Remove(db, appId)
+          return nil
+        },
       },
     },
   }
