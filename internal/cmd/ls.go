@@ -4,25 +4,26 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/leberjs/gnews/internal/models"
 	bolt "go.etcd.io/bbolt"
 )
 
-func List(db *bolt.DB) []map[string]any {
-  var res []map[string]any
+func List(db *bolt.DB) []models.App {
+  var ret []models.App
 
   db.View( func(tx *bolt.Tx) error{
     b := tx.Bucket([]byte("apps"))
     c := b.Stats().KeyN
 
-    res = make([]map[string]any, c)
+    ret = make([]models.App, c)
     i := 0
 
     b.ForEach(func(k, v []byte) error{
-      var t map[string]any
+      var t models.App
       if err := json.Unmarshal(v, &t); err != nil {
         log.Fatal(err)
       }
-      res[i] = t
+      ret[i] = t
       i++
 
       return nil
@@ -30,5 +31,5 @@ func List(db *bolt.DB) []map[string]any {
     return nil
   })
 
-  return res
+  return ret
 }

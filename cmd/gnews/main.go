@@ -48,8 +48,10 @@ func main() {
     return nil
   })
 
-  var appId string
-  var appName string
+  var (
+    appId string
+    appName string
+  )
 
   app := &cli.App{
     Name: "gnews",
@@ -61,7 +63,7 @@ func main() {
         Flags: []cli.Flag{
           &cli.StringFlag{
             Name: "app-id",
-            Usage: "Steam game App Id",
+            Usage: "Steam game App Id (required)",
             Destination: &appId,
             Required: true,
           },
@@ -93,12 +95,23 @@ func main() {
         Usage: "Read latest news for entries in database. Defaults to all entries.",
         Flags: []cli.Flag{
           &cli.StringFlag{
-            Name: "id",
+            Name: "app-id",
           },
           &cli.StringFlag{
             Name: "name",
-            Aliases: []string{"n"},
           },
+        },
+        Action: func(ctx *cli.Context) error {
+          res := cmd.Read(db)
+          
+          for _, news := range res {
+            fmt.Printf("==== News for %s ====\n", news.Name)
+            fmt.Println(news.Contents)
+            fmt.Println("========")
+            fmt.Println()
+          }
+
+          return nil
         },
       },
       {
@@ -106,7 +119,7 @@ func main() {
         Flags: []cli.Flag{
           &cli.StringFlag{
             Name: "app-id",
-            Usage: "Steam game App Id",
+            Usage: "Steam game App Id (required)",
             Destination: &appId,
             Required: true,
           },
